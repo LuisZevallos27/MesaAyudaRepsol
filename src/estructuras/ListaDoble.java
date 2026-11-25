@@ -55,6 +55,7 @@ public class ListaDoble<T> implements ListaTAD<T> {
     /**
      * O(1)
      */
+    @Override
     public void agregarFinal(T dato) {
         Nodo nuevo = new Nodo(dato);
         if (cola == null) {
@@ -71,6 +72,7 @@ public class ListaDoble<T> implements ListaTAD<T> {
     /**
      * Elimina la primera ocurrencia (por equals). O(n)
      */
+    @Override
     public boolean eliminar(T dato) {
         Nodo actual = cabeza;
         while (actual != null) {
@@ -172,6 +174,7 @@ public class ListaDoble<T> implements ListaTAD<T> {
     }
 
     // ---------------- Recorridos ----------------
+    @Override
     public void recorrer(Consumer<T> accion) {
         Nodo actual = cabeza;
         while (actual != null) {
@@ -180,6 +183,7 @@ public class ListaDoble<T> implements ListaTAD<T> {
         }
     }
 
+    @Override
     public void recorrerInverso(Consumer<T> accion) {
         Nodo actual = cola;
         while (actual != null) {

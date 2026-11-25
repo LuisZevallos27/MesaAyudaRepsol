@@ -1,8 +1,11 @@
 package servicio;
 
 import estructuras.ArbolAVL;
+import estructuras.TADs.ArbolBusquedaTAD;
 import estructuras.ColaPrioridad;
+import estructuras.TADs.ColaPrioridadTAD;
 import estructuras.PilaEnlazada;
+import estructuras.TADs.PilaTAD;
 import modelo.Accion;
 import modelo.Agente;
 import modelo.Categoria;
@@ -14,20 +17,22 @@ import java.util.function.Consumer;
 /**
  * Lógica central de la Mesa de Ayuda de Repsol.
  *
- * Estructuras utilizadas (todas propias): - ArbolAVL<Ticket> : índice principal
- * de tickets por ID. - ArbolAVL<Agente> : índice de agentes por ID. -
- * ColaPrioridad<Ticket> : despacho de tickets abiertos según urgencia. -
- * PilaEnlazada<Accion> : pilas de Undo y Redo. - ListaDoble<String> : historial
- * de eventos dentro de cada Ticket.
+ * El servicio depende de los TADs (interfaces), no de las implementaciones: -
+ * ArbolBusquedaTAD<Ticket> (implementado con ArbolAVL): índice de tickets por
+ * ID. - ArbolBusquedaTAD<Agente> (implementado con ArbolAVL): índice de agentes
+ * por ID. - ColaPrioridadTAD<Ticket> (implementado con ColaPrioridad): despacho
+ * por urgencia. - PilaTAD<Accion> (implementado con PilaEnlazada): Undo y Redo.
+ * - ListaTAD<String> (implementado con ListaDoble): historial dentro de cada
+ * Ticket.
  */
 public class MesaAyudaService {
 
-    private final ArbolAVL<Ticket> indiceTickets = new ArbolAVL<>();
-    private final ArbolAVL<Agente> indiceAgentes = new ArbolAVL<>();
-    private final ColaPrioridad<Ticket> colaEspera = new ColaPrioridad<>(
+    private final ArbolBusquedaTAD<Ticket> indiceTickets = new ArbolAVL<>();
+    private final ArbolBusquedaTAD<Agente> indiceAgentes = new ArbolAVL<>();
+    private final ColaPrioridadTAD<Ticket> colaEspera = new ColaPrioridad<>(
             (a, b) -> Integer.compare(a.getPrioridad().getNivel(), b.getPrioridad().getNivel()));
-    private final PilaEnlazada<Accion> pilaUndo = new PilaEnlazada<>();
-    private final PilaEnlazada<Accion> pilaRedo = new PilaEnlazada<>();
+    private final PilaTAD<Accion> pilaUndo = new PilaEnlazada<>();
+    private final PilaTAD<Accion> pilaRedo = new PilaEnlazada<>();
 
     private int siguienteIdTicket = 1001;
     private int siguienteIdAgente = 1;
@@ -99,7 +104,7 @@ public class MesaAyudaService {
     // =====================================================================
     /**
      * Despacha el ticket más urgente de la cola y lo asigna al agente más
-     * adecuado (misma especialidad y menor carga). O(n) por la selección del
+     * adecuado (misma especialidad y menor carga). O(a) por la selección del
      * agente (recorrido Inorden); extraer de la cola es O(1).
      */
     public Ticket atenderSiguiente() {

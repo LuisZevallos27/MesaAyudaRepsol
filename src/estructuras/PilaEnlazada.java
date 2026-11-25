@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 /**
  * Pila (LIFO) genérica implementada con nodos enlazados. Uso: historial de
- * acciones y Undo.
+ * acciones y Undo/Redo.
  */
 public class PilaEnlazada<T> implements PilaTAD<T> {
 

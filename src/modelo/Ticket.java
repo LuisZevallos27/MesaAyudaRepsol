@@ -1,13 +1,14 @@
 package modelo;
 
 import estructuras.ListaDoble;
+import estructuras.TADs.ListaTAD;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
  * Solicitud de soporte de la mesa de ayuda. Es Comparable por ID para poder
- * indexarse en el ArbolAVL. Incluye un historial propio (ListaDoble) navegable
- * hacia adelante y atrás.
+ * indexarse en el árbol de búsqueda. Incluye un historial propio (ListaTAD)
+ * navegable hacia adelante y atrás.
  */
 public class Ticket implements Comparable<Ticket> {
 
@@ -23,7 +24,7 @@ public class Ticket implements Comparable<Ticket> {
     private Estado estado;
     private Agente agenteAsignado;
     private final LocalDateTime fechaCreacion;
-    private final ListaDoble<String> historial;
+    private final ListaTAD<String> historial;
 
     public Ticket(int id, String titulo, String descripcion, String solicitante,
             Categoria categoria, Prioridad prioridad) {
@@ -40,7 +41,7 @@ public class Ticket implements Comparable<Ticket> {
     }
 
     /**
-     * Constructor ligero para búsquedas por ID en el AVL.
+     * Constructor ligero para búsquedas por ID en el árbol.
      */
     public Ticket(int id) {
         this.id = id;
@@ -55,7 +56,7 @@ public class Ticket implements Comparable<Ticket> {
         }
     }
 
-    public ListaDoble<String> getHistorial() {
+    public ListaTAD<String> getHistorial() {
         return historial;
     }
 

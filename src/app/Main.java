@@ -1,7 +1,7 @@
 package app;
 
 import estructuras.EstructuraVaciaException;
-import estructuras.ListaDoble;
+import estructuras.TADs.ListaTAD;
 import modelo.Accion;
 import modelo.Agente;
 import modelo.Categoria;
@@ -256,7 +256,7 @@ public class Main {
             System.out.println(">> No se encontró el ticket #" + id + ".");
             return;
         }
-        ListaDoble<String> historial = t.getHistorial();
+        ListaTAD<String> historial = t.getHistorial();
         historial.irAlInicio();
         System.out.println("Historial del ticket #" + id + " (" + historial.getTamanio() + " evento(s))");
         System.out.println("  Evento actual: " + historial.actual());
