@@ -1,5 +1,6 @@
 package estructuras;
 
+import estructuras.TADs.ArbolBusquedaTAD;
 import java.util.function.Consumer;
 
 /**
@@ -7,7 +8,7 @@ import java.util.function.Consumer;
  * buscar y eliminar en O(log n). No admite elementos duplicados (según
  * compareTo).
  */
-public class ArbolAVL<T extends Comparable<T>> {
+public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
 
     private NodoAVL<T> raiz;
     private int tamanio;
@@ -19,14 +20,17 @@ public class ArbolAVL<T extends Comparable<T>> {
     }
 
     // ---------------- Consultas básicas ----------------
+    @Override
     public boolean estaVacio() {
         return raiz == null;
     }
 
+    @Override
     public int getTamanio() {
         return tamanio;
     }
 
+    @Override
     public int altura() {
         return altura(raiz);
     }
@@ -35,6 +39,7 @@ public class ArbolAVL<T extends Comparable<T>> {
     /**
      * @return true si se insertó, false si ya existía un elemento igual.
      */
+    @Override
     public boolean insertar(T dato) {
         if (dato == null) {
             throw new IllegalArgumentException("No se puede insertar un dato nulo.");
@@ -68,6 +73,7 @@ public class ArbolAVL<T extends Comparable<T>> {
      * @return el elemento almacenado que es igual al buscado, o null si no
      * existe.
      */
+    @Override
     public T buscar(T dato) {
         NodoAVL<T> actual = raiz;
         while (actual != null) {
@@ -80,6 +86,7 @@ public class ArbolAVL<T extends Comparable<T>> {
         return null;
     }
 
+    @Override
     public boolean contiene(T dato) {
         return buscar(dato) != null;
     }
@@ -88,6 +95,7 @@ public class ArbolAVL<T extends Comparable<T>> {
     /**
      * @return true si se eliminó, false si no existía.
      */
+    @Override
     public boolean eliminar(T dato) {
         if (dato == null) {
             return false;
@@ -144,6 +152,7 @@ public class ArbolAVL<T extends Comparable<T>> {
     /**
      * Recorrido Inorden: visita los elementos en orden ascendente.
      */
+    @Override
     public void recorridoInorden(Consumer<T> accion) {
         inorden(raiz, accion);
     }
@@ -157,6 +166,7 @@ public class ArbolAVL<T extends Comparable<T>> {
         inorden(nodo.derecho, accion);
     }
 
+    @Override
     public void recorridoPreorden(Consumer<T> accion) {
         preorden(raiz, accion);
     }

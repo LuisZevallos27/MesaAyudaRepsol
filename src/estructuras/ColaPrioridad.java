@@ -1,5 +1,6 @@
 package estructuras;
 
+import estructuras.TADs.ColaPrioridadTAD;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
@@ -10,7 +11,7 @@ import java.util.function.Consumer;
  *
  * encolar: O(n) | desencolar: O(1) | verFrente: O(1)
  */
-public class ColaPrioridad<T> {
+public class ColaPrioridad<T> implements ColaPrioridadTAD<T> {
 
     private class Nodo {
 
@@ -33,14 +34,17 @@ public class ColaPrioridad<T> {
         this.comparador = comparador;
     }
 
+    @Override
     public boolean estaVacia() {
         return frente == null;
     }
 
+    @Override
     public int getTamanio() {
         return tamanio;
     }
 
+    @Override
     public void encolar(T dato) {
         Nodo nuevo = new Nodo(dato);
         if (frente == null || comparador.compare(dato, frente.dato) < 0) {
@@ -59,6 +63,7 @@ public class ColaPrioridad<T> {
         tamanio++;
     }
 
+    @Override
     public T desencolar() {
         if (estaVacia()) {
             throw new EstructuraVaciaException("La cola de prioridad está vacía.");
@@ -69,6 +74,7 @@ public class ColaPrioridad<T> {
         return dato;
     }
 
+    @Override
     public T verFrente() {
         if (estaVacia()) {
             throw new EstructuraVaciaException("La cola de prioridad está vacía.");
@@ -79,6 +85,7 @@ public class ColaPrioridad<T> {
     /**
      * Elimina un elemento específico (por equals). O(n)
      */
+    @Override
     public boolean eliminar(T dato) {
         Nodo anterior = null;
         Nodo actual = frente;
@@ -101,6 +108,7 @@ public class ColaPrioridad<T> {
     /**
      * Recorre del más urgente al menos urgente sin extraer. O(n)
      */
+    @Override
     public void recorrer(Consumer<T> accion) {
         Nodo actual = frente;
         while (actual != null) {

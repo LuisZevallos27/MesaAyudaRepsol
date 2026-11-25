@@ -1,12 +1,13 @@
 package estructuras;
 
+import estructuras.TADs.ListaTAD;
 import java.util.function.Consumer;
 
 /**
  * Lista doblemente enlazada genérica con cursor de navegación bidireccional
  * (anterior / siguiente).
  */
-public class ListaDoble<T> {
+public class ListaDoble<T> implements ListaTAD<T> {
 
     private class Nodo {
 
@@ -24,10 +25,12 @@ public class ListaDoble<T> {
     private Nodo cursor;
     private int tamanio;
 
+    @Override
     public boolean estaVacia() {
         return cabeza == null;
     }
 
+    @Override
     public int getTamanio() {
         return tamanio;
     }
@@ -36,6 +39,7 @@ public class ListaDoble<T> {
     /**
      * O(1)
      */
+    @Override
     public void agregarInicio(T dato) {
         Nodo nuevo = new Nodo(dato);
         if (cabeza == null) {
@@ -100,6 +104,7 @@ public class ListaDoble<T> {
     /**
      * O(n)
      */
+    @Override
     public T obtener(int indice) {
         if (indice < 0 || indice >= tamanio) {
             throw new IndexOutOfBoundsException("Índice fuera de rango: " + indice);
@@ -120,6 +125,7 @@ public class ListaDoble<T> {
     }
 
     // ---------------- Navegación con cursor (O(1)) ----------------
+    @Override
     public T actual() {
         if (cursor == null) {
             throw new EstructuraVaciaException("La lista está vacía.");
@@ -127,14 +133,17 @@ public class ListaDoble<T> {
         return cursor.dato;
     }
 
+    @Override
     public boolean haySiguiente() {
         return cursor != null && cursor.siguiente != null;
     }
 
+    @Override
     public boolean hayAnterior() {
         return cursor != null && cursor.anterior != null;
     }
 
+    @Override
     public T siguiente() {
         if (!haySiguiente()) {
             throw new IllegalStateException("No hay un registro siguiente.");
@@ -143,6 +152,7 @@ public class ListaDoble<T> {
         return cursor.dato;
     }
 
+    @Override
     public T anterior() {
         if (!hayAnterior()) {
             throw new IllegalStateException("No hay un registro anterior.");
@@ -151,10 +161,12 @@ public class ListaDoble<T> {
         return cursor.dato;
     }
 
+    @Override
     public void irAlInicio() {
         cursor = cabeza;
     }
 
+    @Override
     public void irAlFinal() {
         cursor = cola;
     }
