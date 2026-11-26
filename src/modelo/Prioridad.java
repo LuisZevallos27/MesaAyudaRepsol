@@ -6,7 +6,7 @@ public enum Prioridad {
     MEDIA(3),
     BAJA(4);
 
-    private final int nivel; // menor número = más urgente
+    private final int nivel;
 
     Prioridad(int nivel) {
         this.nivel = nivel;

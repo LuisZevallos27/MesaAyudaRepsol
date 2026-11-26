@@ -19,7 +19,7 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
         tamanio = 0;
     }
 
-    // ---------------- Consultas básicas ----------------
+    //Consultas básicas
     @Override
     public boolean estaVacio() {
         return raiz == null;
@@ -35,10 +35,7 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
         return altura(raiz);
     }
 
-    // ---------------- Inserción ----------------
-    /**
-     * @return true si se insertó, false si ya existía un elemento igual.
-     */
+    //Insertar, true si fue exitoso, false si existe uno igual
     @Override
     public boolean insertar(T dato) {
         if (dato == null) {
@@ -68,11 +65,7 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
         return balancear(nodo);
     }
 
-    // ---------------- Búsqueda ----------------
-    /**
-     * @return el elemento almacenado que es igual al buscado, o null si no
-     * existe.
-     */
+    //Búsqueda, retorna el elemento buscado o null si no existe
     @Override
     public T buscar(T dato) {
         NodoAVL<T> actual = raiz;

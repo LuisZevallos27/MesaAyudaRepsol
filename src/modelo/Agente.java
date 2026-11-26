@@ -1,15 +1,13 @@
 package modelo;
 
-/**
- * Técnico de la mesa de ayuda. Comparable por ID (indexable en el AVL).
- */
 public class Agente implements Comparable<Agente> {
 
-    private final int id;
+    private int id;
     private String nombre;
     private Categoria especialidad;
     private int ticketsAtendidos;
 
+    //Constructores
     public Agente(int id, String nombre, Categoria especialidad) {
         this.id = id;
         this.nombre = nombre;
@@ -17,13 +15,11 @@ public class Agente implements Comparable<Agente> {
         this.ticketsAtendidos = 0;
     }
 
-    /**
-     * Constructor ligero para búsquedas por ID.
-     */
     public Agente(int id) {
         this.id = id;
     }
 
+    //Getters y Setters
     public int getId() {
         return id;
     }
@@ -48,6 +44,7 @@ public class Agente implements Comparable<Agente> {
         return ticketsAtendidos;
     }
 
+    //Metodos basicos
     public void incrementarAtendidos() {
         ticketsAtendidos++;
     }
@@ -58,20 +55,21 @@ public class Agente implements Comparable<Agente> {
         }
     }
 
+    //Comparar y formato de impresion
     @Override
     public int compareTo(Agente otro) {
         return Integer.compare(this.id, otro.id);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object valor) {
+        if (this == valor) {
             return true;
         }
-        if (!(o instanceof Agente)) {
+        if (!(valor instanceof Agente)) {
             return false;
         }
-        return this.id == ((Agente) o).id;
+        return this.id == ((Agente) valor).id;
     }
 
     @Override
