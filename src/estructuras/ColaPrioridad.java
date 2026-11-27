@@ -1,7 +1,7 @@
 package estructuras;
 
 import excepciones.EstructuraVaciaException;
-import estructuras.TADs.ColaPrioridadTAD;
+import estructuras.tads.ColaPrioridadTAD;
 import java.util.Comparator;
 import java.util.function.Consumer;
 

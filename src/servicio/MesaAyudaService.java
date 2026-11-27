@@ -2,8 +2,8 @@ package servicio;
 
 import estructuras.ArbolAVL;
 import estructuras.ColaPrioridad;
-import estructuras.TADs.ColaPrioridadTAD;
-import estructuras.TADs.ArbolBusquedaTAD;
+import estructuras.tads.ColaPrioridadTAD;
+import estructuras.tads.ArbolBusquedaTAD;
 import excepciones.MesaAyudaException;
 import modelo.Agente;
 import modelo.Categoria;

@@ -24,13 +24,12 @@ public class Main {
 
         System.out.println("==========================================================");
         System.out.println("        MESA DE AYUDA TI - REPSOL");
-        System.out.println("        Datos de ejemplo cargados correctamente.");
         System.out.println("==========================================================");
 
         int opcion;
         do {
             mostrarMenu();
-            opcion = leerEntero("Seleccione una opción: ");
+            opcion = leerEntero("Seleccione una opcion: ");
             try {
                 ejecutarOpcion(opcion);
             } catch (MesaAyudaException | EstructuraVaciaException
@@ -48,8 +47,7 @@ public class Main {
     // =====================================================================
     private static void mostrarMenu() {
         System.out.println();
-        System.out.println("---------------- MENÚ PRINCIPAL ----------------");
-        System.out.println(" TICKETS");
+        System.out.println("---------------- MENU PRINCIPAL ----------------");
         System.out.println("  1. Registrar nuevo ticket");
         System.out.println("  2. Buscar ticket por ID");
         System.out.println("  3. Listar todos los tickets (ordenados por ID)");
@@ -60,10 +58,10 @@ public class Main {
         System.out.println("  8. Cambiar prioridad de un ticket");
         System.out.println("  9. Reasignar agente");
         System.out.println(" 10. Eliminar ticket");
-        System.out.println(" AGENTES Y REPORTES");
+        System.out.println("---------------- AGENTES Y REPORTES ----------------");
         System.out.println(" 11. Listar agentes");
         System.out.println(" 12. Registrar agente");
-        System.out.println(" 13. Estadísticas");
+        System.out.println(" 13. Estadisticas");
         System.out.println(" 14. Ejecutar Benchmark (AVL vs Lista)");
         System.out.println("  0. Salir");
         System.out.println("------------------------------------------------");
@@ -116,7 +114,7 @@ public class Main {
             case 0:
                 break;
             default:
-                System.out.println(">> Opción no válida.");
+                System.out.println(">> Opción no valida.");
         }
     }
 
@@ -286,7 +284,7 @@ public class Main {
             try {
                 return Integer.parseInt(linea);
             } catch (NumberFormatException e) {
-                System.out.println(">> Ingrese un número entero válido.");
+                System.out.println(">> Ingrese un numero entero valido.");
             }
         }
     }

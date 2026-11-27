@@ -1,6 +1,6 @@
 package estructuras;
 
-import estructuras.TADs.ArbolBusquedaTAD;
+import estructuras.tads.ArbolBusquedaTAD;
 import java.util.function.Consumer;
 
 /**

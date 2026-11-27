@@ -1,5 +1,6 @@
 package servicio;
 
+import estructuras.tads.ArbolBusquedaTAD;
 import estructuras.ArbolAVL;
 import java.util.Random;
 
@@ -87,7 +88,7 @@ public class BenchmarkService {
 
             for (int r = 0; r < REPETICIONES; r++) {
                 // ----- AVL -----
-                ArbolAVL<Integer> avl = new ArbolAVL<>();
+                ArbolBusquedaTAD<Integer> avl = new ArbolAVL<>();
                 long t0 = System.nanoTime();
                 for (int k : claves) {
                     avl.insertar(k);
@@ -140,7 +141,7 @@ public class BenchmarkService {
         Random azar = new Random(SEMILLA);
         int[] claves = generarClavesMezcladas(2_000, azar);
         for (int vuelta = 0; vuelta < 5; vuelta++) {
-            ArbolAVL<Integer> avl = new ArbolAVL<>();
+            ArbolBusquedaTAD<Integer> avl = new ArbolAVL<>();
             ListaSimple lista = new ListaSimple();
             for (int k : claves) {
                 avl.insertar(k);

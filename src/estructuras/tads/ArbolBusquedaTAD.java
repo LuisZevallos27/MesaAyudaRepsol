@@ -1,4 +1,4 @@
-package estructuras.TADs;
+package estructuras.tads;
 
 import java.util.function.Consumer;
 
