@@ -1,5 +1,6 @@
 package servicio;
 
+import excepciones.MesaAyudaException;
 import estructuras.ArbolAVL;
 import estructuras.TADs.ArbolBusquedaTAD;
 import estructuras.ColaPrioridad;

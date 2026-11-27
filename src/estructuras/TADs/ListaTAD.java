@@ -12,11 +12,6 @@ public interface ListaTAD<T> {
 
     T obtener(int indice);
 
-    boolean estaVacia();
-
-    int getTamanio();
-
-    // Navegación bidireccional con cursor
     T actual();
 
     boolean haySiguiente();
@@ -34,4 +29,9 @@ public interface ListaTAD<T> {
     void recorrer(Consumer<T> accion);
 
     void recorrerInverso(Consumer<T> accion);
+
+    //Metodos basicos
+    boolean estaVacia();
+
+    int getTamanio();
 }

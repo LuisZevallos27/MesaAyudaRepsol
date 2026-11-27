@@ -1,6 +1,6 @@
 package app;
 
-import estructuras.EstructuraVaciaException;
+import excepciones.EstructuraVaciaException;
 import estructuras.TADs.ListaTAD;
 import modelo.Accion;
 import modelo.Agente;
@@ -9,7 +9,7 @@ import modelo.Estado;
 import modelo.Prioridad;
 import modelo.Ticket;
 import servicio.BenchmarkService;
-import servicio.MesaAyudaException;
+import excepciones.MesaAyudaException;
 import servicio.MesaAyudaService;
 import java.util.Scanner;
 

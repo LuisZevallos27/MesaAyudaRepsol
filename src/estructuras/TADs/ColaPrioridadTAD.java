@@ -8,13 +8,15 @@ public interface ColaPrioridadTAD<T> {
 
     T desencolar();
 
-    T verFrente();
-
     boolean eliminar(T dato);
 
+    T verFrente();
+
+    void recorrer(Consumer<T> accion);
+
+    //Metodos basicos
     boolean estaVacia();
 
     int getTamanio();
 
-    void recorrer(Consumer<T> accion);
 }

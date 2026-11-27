@@ -1,5 +1,6 @@
 package estructuras;
 
+import excepciones.EstructuraVaciaException;
 import estructuras.TADs.ListaTAD;
 import java.util.function.Consumer;
 

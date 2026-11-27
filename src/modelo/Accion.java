@@ -1,6 +1,6 @@
 package modelo;
 
-//Guardar y volver a un estado previo de un ticket y deshacer esa accion
+//Guardar el estado de un ticket luego de un cambio
 public class Accion {
 
     private Tipo tipo;

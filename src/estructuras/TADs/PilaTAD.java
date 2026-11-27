@@ -10,11 +10,12 @@ public interface PilaTAD<T> {
 
     T verCima();
 
-    boolean estaVacia();
-
-    int getTamanio();
-
     void vaciar();
 
     void recorrer(Consumer<T> accion);
+
+    //Metodos basicos
+    boolean estaVacia();
+
+    int getTamanio();
 }
