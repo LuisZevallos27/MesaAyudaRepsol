@@ -1,7 +1,5 @@
 package modelo;
 
-import estructuras.ListaDoble;
-import estructuras.TADs.ListaTAD;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -20,8 +18,6 @@ public class Ticket implements Comparable<Ticket> {
     private Agente agenteAsignado;
     private LocalDateTime fechaCreacion;
 
-    private ListaTAD<String> historial;
-
     //Constructores
     public Ticket(int id, String titulo, String descripcion, String solicitante,
             Categoria categoria, Prioridad prioridad) {
@@ -33,25 +29,11 @@ public class Ticket implements Comparable<Ticket> {
         this.prioridad = prioridad;
         this.estado = Estado.ABIERTO;
         this.fechaCreacion = LocalDateTime.now();
-        this.historial = new ListaDoble<>();
-        registrarEvento("Ticket creado con prioridad " + prioridad);
     }
 
     public Ticket(int id) {
         this.id = id;
         this.fechaCreacion = null;
-        this.historial = null;
-    }
-
-    //Historial
-    public void registrarEvento(String evento) {
-        if (historial != null) {
-            historial.agregarFinal(LocalDateTime.now().format(FORMATO) + " - " + evento);
-        }
-    }
-
-    public ListaTAD<String> getHistorial() {
-        return historial;
     }
 
     //Getters y Setters

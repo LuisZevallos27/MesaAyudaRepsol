@@ -1,8 +1,6 @@
 package app;
 
 import excepciones.EstructuraVaciaException;
-import estructuras.TADs.ListaTAD;
-import modelo.Accion;
 import modelo.Agente;
 import modelo.Categoria;
 import modelo.Estado;
@@ -62,16 +60,11 @@ public class Main {
         System.out.println("  8. Cambiar prioridad de un ticket");
         System.out.println("  9. Reasignar agente");
         System.out.println(" 10. Eliminar ticket");
-        System.out.println(" 11. Navegar historial de un ticket (anterior/siguiente)");
-        System.out.println(" HISTORIAL");
-        System.out.println(" 12. Deshacer (Undo)");
-        System.out.println(" 13. Rehacer (Redo)");
-        System.out.println(" 14. Ver historial de acciones");
         System.out.println(" AGENTES Y REPORTES");
-        System.out.println(" 15. Listar agentes");
-        System.out.println(" 16. Registrar agente");
-        System.out.println(" 17. Estadísticas");
-        System.out.println(" 18. Ejecutar Benchmark (AVL vs Lista)");
+        System.out.println(" 11. Listar agentes");
+        System.out.println(" 12. Registrar agente");
+        System.out.println(" 13. Estadísticas");
+        System.out.println(" 14. Ejecutar Benchmark (AVL vs Lista)");
         System.out.println("  0. Salir");
         System.out.println("------------------------------------------------");
     }
@@ -109,27 +102,15 @@ public class Main {
                 eliminarTicket();
                 break;
             case 11:
-                navegarHistorial();
-                break;
-            case 12:
-                deshacer();
-                break;
-            case 13:
-                rehacer();
-                break;
-            case 14:
-                verHistorialAcciones();
-                break;
-            case 15:
                 listarAgentes();
                 break;
-            case 16:
+            case 12:
                 registrarAgente();
                 break;
-            case 17:
+            case 13:
                 estadisticas();
                 break;
-            case 18:
+            case 14:
                 new BenchmarkService().ejecutar();
                 break;
             case 0:
@@ -239,88 +220,13 @@ public class Main {
             return;
         }
         System.out.println(t);
-        String confirmacion = leerTexto("¿Confirmar eliminación? (S/N): ");
+        String confirmacion = leerTexto("¿Confirmar eliminación definitiva? (S/N): ");
         if (confirmacion.equalsIgnoreCase("S")) {
             servicio.eliminarTicket(id);
-            System.out.println(">> Ticket #" + id + " eliminado. Puede recuperarlo con Deshacer.");
+            System.out.println(">> Ticket #" + id + " eliminado.");
         } else {
             System.out.println(">> Operación cancelada.");
         }
-    }
-
-    private static void navegarHistorial() {
-        System.out.println("\n--- Navegar historial de un ticket ---");
-        int id = leerEntero("ID del ticket: ");
-        Ticket t = servicio.buscarTicket(id);
-        if (t == null) {
-            System.out.println(">> No se encontró el ticket #" + id + ".");
-            return;
-        }
-        ListaTAD<String> historial = t.getHistorial();
-        historial.irAlInicio();
-        System.out.println("Historial del ticket #" + id + " (" + historial.getTamanio() + " evento(s))");
-        System.out.println("  Evento actual: " + historial.actual());
-
-        String comando;
-        do {
-            comando = leerTexto("[A] Anterior  [S] Siguiente  [I] Inicio  [F] Final  [X] Salir: ")
-                    .toUpperCase();
-            switch (comando) {
-                case "A":
-                    if (historial.hayAnterior()) {
-                        System.out.println("  << " + historial.anterior());
-                    } else {
-                        System.out.println("  (Ya está en el primer evento)");
-                    }
-                    break;
-                case "S":
-                    if (historial.haySiguiente()) {
-                        System.out.println("  >> " + historial.siguiente());
-                    } else {
-                        System.out.println("  (Ya está en el último evento)");
-                    }
-                    break;
-                case "I":
-                    historial.irAlInicio();
-                    System.out.println("  |< " + historial.actual());
-                    break;
-                case "F":
-                    historial.irAlFinal();
-                    System.out.println("  >| " + historial.actual());
-                    break;
-                case "X":
-                    break;
-                default:
-                    System.out.println("  Comando no válido.");
-            }
-        } while (!comando.equals("X"));
-    }
-
-    // =====================================================================
-    //  UNDO / REDO
-    // =====================================================================
-    private static void deshacer() {
-        Accion accion = servicio.deshacer();
-        System.out.println(">> Acción deshecha: " + accion);
-    }
-
-    private static void rehacer() {
-        Accion accion = servicio.rehacer();
-        System.out.println(">> Acción rehecha: " + accion);
-    }
-
-    private static void verHistorialAcciones() {
-        System.out.println("\n--- Historial de acciones (la más reciente primero) ---");
-        int[] contador = {0};
-        servicio.recorrerHistorialAcciones(a -> {
-            contador[0]++;
-            System.out.println(contador[0] + ". " + a);
-        });
-        if (contador[0] == 0) {
-            System.out.println("Aún no hay acciones registradas.");
-        }
-        System.out.println("Puede deshacer: " + (servicio.puedeDeshacer() ? "Sí" : "No")
-                + " | Puede rehacer: " + (servicio.puedeRehacer() ? "Sí" : "No"));
     }
 
     // =====================================================================
@@ -366,8 +272,6 @@ public class Main {
         System.out.println("Agente       : "
                 + (t.getAgenteAsignado() == null ? "Sin asignar" : t.getAgenteAsignado().getNombre()));
         System.out.println("Creado       : " + t.getFechaFormateada());
-        System.out.println("Eventos      : " + t.getHistorial().getTamanio()
-                + " (use la opción 11 para navegarlos)");
     }
 
     private static String leerTexto(String mensaje) {

@@ -1,13 +1,10 @@
 package servicio;
 
-import excepciones.MesaAyudaException;
 import estructuras.ArbolAVL;
-import estructuras.TADs.ArbolBusquedaTAD;
 import estructuras.ColaPrioridad;
 import estructuras.TADs.ColaPrioridadTAD;
-import estructuras.PilaEnlazada;
-import estructuras.TADs.PilaTAD;
-import modelo.Accion;
+import estructuras.TADs.ArbolBusquedaTAD;
+import excepciones.MesaAyudaException;
 import modelo.Agente;
 import modelo.Categoria;
 import modelo.Estado;
@@ -19,12 +16,9 @@ import java.util.function.Consumer;
  * Lógica central de la Mesa de Ayuda de Repsol.
  *
  * El servicio depende de los TADs (interfaces), no de las implementaciones: -
- * ArbolBusquedaTAD<Ticket> (implementado con ArbolAVL): índice de tickets por
- * ID. - ArbolBusquedaTAD<Agente> (implementado con ArbolAVL): índice de agentes
- * por ID. - ColaPrioridadTAD<Ticket> (implementado con ColaPrioridad): despacho
- * por urgencia. - PilaTAD<Accion> (implementado con PilaEnlazada): Undo y Redo.
- * - ListaTAD<String> (implementado con ListaDoble): historial dentro de cada
- * Ticket.
+ * ArbolBusquedaTAD<Ticket> (ArbolAVL) : índice de tickets por ID. -
+ * ArbolBusquedaTAD<Agente> (ArbolAVL) : índice de agentes por ID. -
+ * ColaPrioridadTAD<Ticket> (ColaPrioridad): despacho de tickets por urgencia.
  */
 public class MesaAyudaService {
 
@@ -32,8 +26,6 @@ public class MesaAyudaService {
     private final ArbolBusquedaTAD<Agente> indiceAgentes = new ArbolAVL<>();
     private final ColaPrioridadTAD<Ticket> colaEspera = new ColaPrioridad<>(
             (a, b) -> Integer.compare(a.getPrioridad().getNivel(), b.getPrioridad().getNivel()));
-    private final PilaTAD<Accion> pilaUndo = new PilaEnlazada<>();
-    private final PilaTAD<Accion> pilaRedo = new PilaEnlazada<>();
 
     private int siguienteIdTicket = 1001;
     private int siguienteIdAgente = 1;
@@ -79,7 +71,6 @@ public class MesaAyudaService {
                 solicitante.trim(), categoria, prioridad);
         indiceTickets.insertar(ticket);
         colaEspera.encolar(ticket);
-        registrarAccion(Accion.crearTicket(ticket));
         return ticket;
     }
 
@@ -91,12 +82,18 @@ public class MesaAyudaService {
     }
 
     /**
-     * O(n) en el peor caso (sacar el ticket de la cola).
+     * Eliminación definitiva. O(n) en el peor caso (sacar el ticket de la
+     * cola).
      */
     public Ticket eliminarTicket(int id) {
         Ticket ticket = exigirTicket(id);
-        quitarTicket(ticket);
-        registrarAccion(Accion.eliminarTicket(ticket));
+        indiceTickets.eliminar(ticket);
+        if (ticket.getEstado() == Estado.ABIERTO) {
+            colaEspera.eliminar(ticket);
+        }
+        if (ticket.getAgenteAsignado() != null) {
+            ticket.getAgenteAsignado().decrementarAtendidos();
+        }
         return ticket;
     }
 
@@ -117,13 +114,14 @@ public class MesaAyudaService {
         }
         Ticket ticket = colaEspera.desencolar();
         Agente agente = seleccionarAgente(ticket.getCategoria());
-        aplicarAtencion(ticket, agente);
-        registrarAccion(Accion.asignacion(ticket, null, agente));
+        ticket.setEstado(Estado.EN_ATENCION);
+        ticket.setAgenteAsignado(agente);
+        agente.incrementarAtendidos();
         return ticket;
     }
 
     /**
-     * Reasigna un ticket que ya está EN_ATENCION a otro agente. O(log n)
+     * Reasigna un ticket EN_ATENCION a otro agente. O(log n)
      */
     public void reasignarAgente(int idTicket, int idAgente) {
         Ticket ticket = exigirTicket(idTicket);
@@ -138,8 +136,9 @@ public class MesaAyudaService {
         if (actual.equals(nuevo)) {
             throw new MesaAyudaException("El ticket ya está asignado a ese agente.");
         }
-        moverAgente(ticket, actual, nuevo);
-        registrarAccion(Accion.asignacion(ticket, actual, nuevo));
+        actual.decrementarAtendidos();
+        nuevo.incrementarAtendidos();
+        ticket.setAgenteAsignado(nuevo);
     }
 
     /**
@@ -154,8 +153,6 @@ public class MesaAyudaService {
                     + "CERRADO es un estado final.)");
         }
         ticket.setEstado(nuevo);
-        ticket.registrarEvento("Estado cambiado de " + anterior + " a " + nuevo);
-        registrarAccion(Accion.cambioEstado(ticket, anterior, nuevo));
     }
 
     /**
@@ -169,96 +166,17 @@ public class MesaAyudaService {
         if (ticket.getEstado() == Estado.CERRADO) {
             throw new MesaAyudaException("No se puede modificar un ticket CERRADO.");
         }
-        Prioridad anterior = ticket.getPrioridad();
-        if (anterior == nueva) {
+        if (ticket.getPrioridad() == nueva) {
             throw new MesaAyudaException("El ticket ya tiene prioridad " + nueva + ".");
         }
-        aplicarPrioridad(ticket, nueva);
-        registrarAccion(Accion.cambioPrioridad(ticket, anterior, nueva));
-    }
-
-    // =====================================================================
-    //  UNDO / REDO (pilas enlazadas)
-    // =====================================================================
-    public boolean puedeDeshacer() {
-        return !pilaUndo.estaVacia();
-    }
-
-    public boolean puedeRehacer() {
-        return !pilaRedo.estaVacia();
-    }
-
-    /**
-     * @return la acción deshecha.
-     */
-    public Accion deshacer() {
-        if (pilaUndo.estaVacia()) {
-            throw new MesaAyudaException("No hay acciones para deshacer.");
+        boolean enCola = ticket.getEstado() == Estado.ABIERTO;
+        if (enCola) {
+            colaEspera.eliminar(ticket);   // se retira ANTES de cambiar su prioridad
         }
-        Accion accion = pilaUndo.desapilar();
-        Ticket t = accion.getTicket();
-
-        switch (accion.getTipo()) {
-            case CREAR_TICKET:
-                quitarTicket(t);
-                break;
-            case ELIMINAR_TICKET:
-                restaurarTicket(t);
-                break;
-            case CAMBIAR_ESTADO:
-                t.setEstado(accion.getEstadoAnterior());
-                t.registrarEvento("Deshacer: estado vuelve a " + accion.getEstadoAnterior());
-                break;
-            case CAMBIAR_PRIORIDAD:
-                aplicarPrioridad(t, accion.getPrioridadAnterior());
-                break;
-            case ASIGNAR_AGENTE:
-                if (accion.getAgenteAnterior() == null) {
-                    revertirAtencion(t, accion.getAgenteNuevo());
-                } else {
-                    moverAgente(t, accion.getAgenteNuevo(), accion.getAgenteAnterior());
-                }
-                break;
+        ticket.setPrioridad(nueva);
+        if (enCola) {
+            colaEspera.encolar(ticket);
         }
-        pilaRedo.apilar(accion);
-        return accion;
-    }
-
-    /**
-     * @return la acción rehecha.
-     */
-    public Accion rehacer() {
-        if (pilaRedo.estaVacia()) {
-            throw new MesaAyudaException("No hay acciones para rehacer.");
-        }
-        Accion accion = pilaRedo.desapilar();
-        Ticket t = accion.getTicket();
-
-        switch (accion.getTipo()) {
-            case CREAR_TICKET:
-                restaurarTicket(t);
-                break;
-            case ELIMINAR_TICKET:
-                quitarTicket(t);
-                break;
-            case CAMBIAR_ESTADO:
-                t.setEstado(accion.getEstadoNuevo());
-                t.registrarEvento("Rehacer: estado vuelve a " + accion.getEstadoNuevo());
-                break;
-            case CAMBIAR_PRIORIDAD:
-                aplicarPrioridad(t, accion.getPrioridadNueva());
-                break;
-            case ASIGNAR_AGENTE:
-                if (accion.getAgenteAnterior() == null) {
-                    colaEspera.eliminar(t);
-                    aplicarAtencion(t, accion.getAgenteNuevo());
-                } else {
-                    moverAgente(t, accion.getAgenteAnterior(), accion.getAgenteNuevo());
-                }
-                break;
-        }
-        pilaUndo.apilar(accion);
-        return accion;
     }
 
     // =====================================================================
@@ -294,13 +212,6 @@ public class MesaAyudaService {
     }
 
     /**
-     * Historial de acciones realizadas, de la más reciente a la más antigua.
-     */
-    public void recorrerHistorialAcciones(Consumer<Accion> accion) {
-        pilaUndo.recorrer(accion);
-    }
-
-    /**
      * Conteo de tickets por estado; el índice es Estado.ordinal(). O(n)
      */
     public int[] contarPorEstado() {
@@ -331,9 +242,6 @@ public class MesaAyudaService {
     // =====================================================================
     //  DATOS DE EJEMPLO
     // =====================================================================
-    /**
-     * Carga agentes y tickets de ejemplo; deja las pilas Undo/Redo vacías.
-     */
     public void precargarDatos() {
         registrarAgente("Carlos Mendoza", Categoria.REDES);
         registrarAgente("Lucía Paredes", Categoria.SOFTWARE);
@@ -367,19 +275,11 @@ public class MesaAyudaService {
         atenderSiguiente();
         atenderSiguiente();
         cambiarEstado(t1.getId(), Estado.RESUELTO);
-
-        pilaUndo.vaciar();
-        pilaRedo.vaciar();
     }
 
     // =====================================================================
     //  MÉTODOS PRIVADOS DE APOYO
     // =====================================================================
-    private void registrarAccion(Accion accion) {
-        pilaUndo.apilar(accion);
-        pilaRedo.vaciar(); // una acción nueva invalida el Redo
-    }
-
     private Ticket exigirTicket(int id) {
         Ticket ticket = buscarTicket(id);
         if (ticket == null) {
@@ -424,60 +324,5 @@ public class MesaAyudaService {
             }
         });
         return mejor[0];
-    }
-
-    private void aplicarAtencion(Ticket t, Agente agente) {
-        t.setEstado(Estado.EN_ATENCION);
-        t.setAgenteAsignado(agente);
-        agente.incrementarAtendidos();
-        t.registrarEvento("Atendido por " + agente.getNombre());
-    }
-
-    private void revertirAtencion(Ticket t, Agente agente) {
-        agente.decrementarAtendidos();
-        t.setAgenteAsignado(null);
-        t.setEstado(Estado.ABIERTO);
-        colaEspera.encolar(t);
-        t.registrarEvento("Deshacer: ticket devuelto a la cola");
-    }
-
-    private void moverAgente(Ticket t, Agente de, Agente a) {
-        de.decrementarAtendidos();
-        a.incrementarAtendidos();
-        t.setAgenteAsignado(a);
-        t.registrarEvento("Reasignado de " + de.getNombre() + " a " + a.getNombre());
-    }
-
-    private void aplicarPrioridad(Ticket t, Prioridad nueva) {
-        boolean enCola = t.getEstado() == Estado.ABIERTO;
-        if (enCola) {
-            colaEspera.eliminar(t);   // se retira ANTES de cambiar su prioridad
-        }
-        Prioridad anterior = t.getPrioridad();
-        t.setPrioridad(nueva);
-        if (enCola) {
-            colaEspera.encolar(t);
-        }
-        t.registrarEvento("Prioridad cambiada de " + anterior + " a " + nueva);
-    }
-
-    private void quitarTicket(Ticket t) {
-        indiceTickets.eliminar(t);
-        if (t.getEstado() == Estado.ABIERTO) {
-            colaEspera.eliminar(t);
-        }
-        if (t.getAgenteAsignado() != null) {
-            t.getAgenteAsignado().decrementarAtendidos();
-        }
-    }
-
-    private void restaurarTicket(Ticket t) {
-        indiceTickets.insertar(t);
-        if (t.getEstado() == Estado.ABIERTO) {
-            colaEspera.encolar(t);
-        }
-        if (t.getAgenteAsignado() != null) {
-            t.getAgenteAsignado().incrementarAtendidos();
-        }
     }
 }
