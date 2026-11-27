@@ -240,44 +240,6 @@ public class MesaAyudaService {
     }
 
     // =====================================================================
-    //  DATOS DE EJEMPLO
-    // =====================================================================
-    public void precargarDatos() {
-        registrarAgente("Carlos Mendoza", Categoria.REDES);
-        registrarAgente("Lucía Paredes", Categoria.SOFTWARE);
-        registrarAgente("Jorge Quispe", Categoria.HARDWARE);
-        registrarAgente("María Salazar", Categoria.SAP_Y_APLICACIONES);
-        registrarAgente("Andrea Ríos", Categoria.ACCESOS_Y_CUENTAS);
-
-        crearTicket("Caída de VPN en Refinería", "Los operadores no pueden conectarse por VPN a los sistemas de planta.",
-                "Ricardo Flores", Categoria.REDES, Prioridad.CRITICA);
-        crearTicket("Bloqueo de cuenta de dominio", "Usuario bloqueado tras varios intentos fallidos.",
-                "Patricia Vega", Categoria.ACCESOS_Y_CUENTAS, Prioridad.MEDIA);
-        crearTicket("Error SAP módulo MM", "No permite registrar entrada de mercancías.",
-                "Luis Camacho", Categoria.SAP_Y_APLICACIONES, Prioridad.ALTA);
-        crearTicket("Laptop no enciende", "Equipo de oficina San Isidro sin respuesta al botón de encendido.",
-                "Sofía Delgado", Categoria.HARDWARE, Prioridad.MEDIA);
-        crearTicket("Impresora de despacho sin conexión", "No imprime guías de remisión en el terminal.",
-                "Miguel Torres", Categoria.HARDWARE, Prioridad.ALTA);
-        crearTicket("Actualización de Office", "Solicitud de instalación de la versión corporativa.",
-                "Elena Rojas", Categoria.SOFTWARE, Prioridad.BAJA);
-        crearTicket("Sin acceso a carpeta compartida", "Permisos denegados en la carpeta de Logística.",
-                "Diego Salinas", Categoria.ACCESOS_Y_CUENTAS, Prioridad.MEDIA);
-        crearTicket("Caída de Wi-Fi en estación de servicio", "Sin red inalámbrica en el área de caja.",
-                "Valeria Núñez", Categoria.REDES, Prioridad.ALTA);
-        crearTicket("Alta de usuario SAP", "Nuevo analista requiere usuario y roles de Finanzas.",
-                "Héctor Ponce", Categoria.SAP_Y_APLICACIONES, Prioridad.BAJA);
-        crearTicket("Lentitud en sistema de facturación", "Tiempos de respuesta superiores a 30 segundos.",
-                "Natalia Cruz", Categoria.SOFTWARE, Prioridad.CRITICA);
-
-        // Algunos tickets ya en curso para que las capturas muestren distintos estados
-        Ticket t1 = atenderSiguiente();
-        atenderSiguiente();
-        atenderSiguiente();
-        cambiarEstado(t1.getId(), Estado.RESUELTO);
-    }
-
-    // =====================================================================
     //  MÉTODOS PRIVADOS DE APOYO
     // =====================================================================
     private Ticket exigirTicket(int id) {

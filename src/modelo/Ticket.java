@@ -129,7 +129,7 @@ public class Ticket implements Comparable<Ticket> {
 
     @Override
     public String toString() {
-        return String.format("[#%d] %-30s | %-7s | %-11s | %-18s | Agente: %s",
+        return String.format("[#%d] %-40.40s | %-7s | %-11s | %-18s | Agente: %s",
                 id, titulo, prioridad, estado, categoria,
                 agenteAsignado == null ? "Sin asignar" : agenteAsignado.getNombre());
     }

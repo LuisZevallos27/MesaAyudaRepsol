@@ -3,17 +3,27 @@ package estructuras;
 import estructuras.tads.ArbolBusquedaTAD;
 import java.util.function.Consumer;
 
-/**
- * Árbol AVL genérico (autobalanceado). Índice principal en memoria: insertar,
- * buscar y eliminar en O(log n). No admite elementos duplicados (según
- * compareTo).
- */
 public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
+
+    //Clase molde 
+    private static class NodoAVL<E> {
+
+        private E dato;
+        private NodoAVL<E> izquierdo;
+        private NodoAVL<E> derecho;
+        private int altura;
+
+        private NodoAVL(E dato) {
+            this.dato = dato;
+            this.altura = 1;
+        }
+    }
 
     private NodoAVL<T> raiz;
     private int tamanio;
-    private boolean cambio; // bandera auxiliar para insertar/eliminar
+    private boolean cambio;
 
+    //Constructor
     public ArbolAVL() {
         raiz = null;
         tamanio = 0;
