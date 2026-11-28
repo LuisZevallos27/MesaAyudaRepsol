@@ -5,19 +5,13 @@ import estructuras.tads.ColaPrioridadTAD;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
-/**
- * Cola de prioridad genérica con lista enlazada ordenada. El comparador define
- * la urgencia: si comparar(a, b) < 0, 'a' sale antes que 'b'. A igual prioridad
- * se respeta el orden de llegada (FIFO, estable).
- *
- * encolar: O(n) | desencolar: O(1) | verFrente: O(1)
- */
 public class ColaPrioridad<T> implements ColaPrioridadTAD<T> {
 
+    //Clase molde
     private class Nodo {
 
-        T dato;
-        Nodo siguiente;
+        private T dato;
+        private Nodo siguiente;
 
         Nodo(T dato) {
             this.dato = dato;
@@ -26,8 +20,9 @@ public class ColaPrioridad<T> implements ColaPrioridadTAD<T> {
 
     private Nodo frente;
     private int tamanio;
-    private final Comparator<T> comparador;
+    private Comparator<T> comparador;
 
+    //Constructor
     public ColaPrioridad(Comparator<T> comparador) {
         if (comparador == null) {
             throw new IllegalArgumentException("El comparador no puede ser nulo.");
@@ -35,6 +30,7 @@ public class ColaPrioridad<T> implements ColaPrioridadTAD<T> {
         this.comparador = comparador;
     }
 
+    //Metodos basicos
     @Override
     public boolean estaVacia() {
         return frente == null;
@@ -53,7 +49,7 @@ public class ColaPrioridad<T> implements ColaPrioridadTAD<T> {
             frente = nuevo;
         } else {
             Nodo actual = frente;
-            // avanza mientras el siguiente tenga igual o mayor prioridad (estable)
+            // avanza mientras el siguiente tenga igual o mayor prioridad
             while (actual.siguiente != null
                     && comparador.compare(dato, actual.siguiente.dato) >= 0) {
                 actual = actual.siguiente;
@@ -67,7 +63,7 @@ public class ColaPrioridad<T> implements ColaPrioridadTAD<T> {
     @Override
     public T desencolar() {
         if (estaVacia()) {
-            throw new EstructuraVaciaException("La cola de prioridad está vacía.");
+            throw new EstructuraVaciaException("La cola de prioridad esta vacia.");
         }
         T dato = frente.dato;
         frente = frente.siguiente;
@@ -78,14 +74,11 @@ public class ColaPrioridad<T> implements ColaPrioridadTAD<T> {
     @Override
     public T verFrente() {
         if (estaVacia()) {
-            throw new EstructuraVaciaException("La cola de prioridad está vacía.");
+            throw new EstructuraVaciaException("La cola de prioridad esta vacia.");
         }
         return frente.dato;
     }
 
-    /**
-     * Elimina un elemento específico (por equals). O(n)
-     */
     @Override
     public boolean eliminar(T dato) {
         Nodo anterior = null;
@@ -106,9 +99,7 @@ public class ColaPrioridad<T> implements ColaPrioridadTAD<T> {
         return false;
     }
 
-    /**
-     * Recorre del más urgente al menos urgente sin extraer. O(n)
-     */
+    //Recorrer para listar por prioridad
     @Override
     public void recorrer(Consumer<T> accion) {
         Nodo actual = frente;

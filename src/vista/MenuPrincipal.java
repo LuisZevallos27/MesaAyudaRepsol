@@ -5,14 +5,11 @@ import excepciones.MesaAyudaException;
 import servicio.BenchmarkService;
 import servicio.MesaAyudaService;
 
-/**
- * Muestra el menú y dirige cada opción a su pantalla.
- */
 public class MenuPrincipal {
 
-    private final Consola consola = new Consola();
-    private final TicketVista tickets;
-    private final AgenteVista agentes;
+    private Consola consola = new Consola();
+    private TicketVista tickets;
+    private AgenteVista agentes;
 
     public MenuPrincipal(MesaAyudaService servicio) {
         this.tickets = new TicketVista(servicio, consola);

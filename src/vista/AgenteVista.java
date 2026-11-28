@@ -5,9 +5,6 @@ import modelo.Categoria;
 import modelo.Estado;
 import servicio.MesaAyudaService;
 
-/**
- * Pantallas de agentes y estadísticas (opciones 11 a 13).
- */
 public class AgenteVista {
 
     private final MesaAyudaService servicio;
@@ -32,7 +29,7 @@ public class AgenteVista {
     }
 
     public void estadisticas() {
-        System.out.println("\n--- Estadísticas de la Mesa de Ayuda ---");
+        System.out.println("\n--- Estadisticas de la Mesa de Ayuda ---");
         int[] conteo = servicio.contarPorEstado();
         Estado[] estados = Estado.values();
         System.out.println("Tickets totales      : " + servicio.getCantidadTickets());

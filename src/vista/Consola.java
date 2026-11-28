@@ -2,9 +2,6 @@ package vista;
 
 import java.util.Scanner;
 
-/**
- * Utilidades para leer datos del teclado con validación.
- */
 public class Consola {
 
     private final Scanner sc = new Scanner(System.in);
@@ -32,11 +29,11 @@ public class Consola {
             System.out.println("  " + (i + 1) + ". " + valores[i]);
         }
         while (true) {
-            int opcion = leerEntero("Elija una opción: ");
+            int opcion = leerEntero("Elija una opcion: ");
             if (opcion >= 1 && opcion <= valores.length) {
                 return valores[opcion - 1];
             }
-            System.out.println(">> Opción fuera de rango.");
+            System.out.println(">> Opcion fuera de rango.");
         }
     }
 }

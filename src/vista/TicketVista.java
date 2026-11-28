@@ -6,9 +6,6 @@ import modelo.Prioridad;
 import modelo.Ticket;
 import servicio.MesaAyudaService;
 
-/**
- * Pantallas relacionadas con los tickets (opciones 1 a 10).
- */
 public class TicketVista {
 
     private final MesaAyudaService servicio;
@@ -22,9 +19,9 @@ public class TicketVista {
     public void registrarTicket() {
         System.out.println("\n--- Registrar nuevo ticket ---");
         String titulo = consola.leerTexto("Título: ");
-        String descripcion = consola.leerTexto("Descripción: ");
+        String descripcion = consola.leerTexto("Descripcion: ");
         String solicitante = consola.leerTexto("Solicitante: ");
-        Categoria categoria = consola.elegirEnum("Categoría:", Categoria.values());
+        Categoria categoria = consola.elegirEnum("Categoria:", Categoria.values());
         Prioridad prioridad = consola.elegirEnum("Prioridad:", Prioridad.values());
 
         Ticket t = servicio.crearTicket(titulo, descripcion, solicitante, categoria, prioridad);
@@ -36,7 +33,7 @@ public class TicketVista {
         int id = consola.leerEntero("ID del ticket: ");
         Ticket t = servicio.buscarTicket(id);
         if (t == null) {
-            System.out.println(">> No se encontró el ticket #" + id + ".");
+            System.out.println(">> No se encontro el ticket #" + id + ".");
         } else {
             mostrarDetalle(t);
         }
@@ -64,7 +61,7 @@ public class TicketVista {
     }
 
     public void verCola() {
-        System.out.println("\n--- Cola de espera (del más urgente al menos urgente) ---");
+        System.out.println("\n--- Cola de espera (del mas urgente al menos urgente) ---");
         int[] posicion = {0};
         servicio.recorrerCola(t -> {
             posicion[0]++;
@@ -113,25 +110,25 @@ public class TicketVista {
         int id = consola.leerEntero("ID del ticket: ");
         Ticket t = servicio.buscarTicket(id);
         if (t == null) {
-            System.out.println(">> No se encontró el ticket #" + id + ".");
+            System.out.println(">> No se encontro el ticket #" + id + ".");
             return;
         }
         System.out.println(t);
-        String confirmacion = consola.leerTexto("¿Confirmar eliminación definitiva? (S/N): ");
+        String confirmacion = consola.leerTexto("¿Confirmar eliminacion definitiva? (S/N): ");
         if (confirmacion.equalsIgnoreCase("S")) {
             servicio.eliminarTicket(id);
             System.out.println(">> Ticket #" + id + " eliminado.");
         } else {
-            System.out.println(">> Operación cancelada.");
+            System.out.println(">> Operacion cancelada.");
         }
     }
 
     private void mostrarDetalle(Ticket t) {
         System.out.println("\n===== TICKET #" + t.getId() + " =====");
-        System.out.println("Título       : " + t.getTitulo());
-        System.out.println("Descripción  : " + t.getDescripcion());
+        System.out.println("Titulo       : " + t.getTitulo());
+        System.out.println("Descripcion  : " + t.getDescripcion());
         System.out.println("Solicitante  : " + t.getSolicitante());
-        System.out.println("Categoría    : " + t.getCategoria());
+        System.out.println("Categoria    : " + t.getCategoria());
         System.out.println("Prioridad    : " + t.getPrioridad());
         System.out.println("Estado       : " + t.getEstado());
         System.out.println("Agente       : "

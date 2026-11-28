@@ -45,33 +45,42 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
         return altura(raiz);
     }
 
-    //Insertar, true si fue exitoso, false si existe uno igual
+    @Override
+    public boolean contiene(T dato) {
+        return buscar(dato) != null;
+    }
+
+    //Insertar, true si fue exitoso, false si existe uno igual, es recursivo
     @Override
     public boolean insertar(T dato) {
         if (dato == null) {
             throw new IllegalArgumentException("No se puede insertar un dato nulo.");
         }
+
         cambio = false;
-        raiz = insertar(raiz, dato);
+        raiz = insertarRecursivo(raiz, dato);
+
         if (cambio) {
             tamanio++;
         }
         return cambio;
     }
 
-    private NodoAVL<T> insertar(NodoAVL<T> nodo, T dato) {
+    private NodoAVL<T> insertarRecursivo(NodoAVL<T> nodo, T dato) {
         if (nodo == null) {
             cambio = true;
             return new NodoAVL<>(dato);
         }
+
         int cmp = dato.compareTo(nodo.dato);
         if (cmp < 0) {
-            nodo.izquierdo = insertar(nodo.izquierdo, dato);
+            nodo.izquierdo = insertarRecursivo(nodo.izquierdo, dato);
         } else if (cmp > 0) {
-            nodo.derecho = insertar(nodo.derecho, dato);
+            nodo.derecho = insertarRecursivo(nodo.derecho, dato);
         } else {
-            return nodo; // duplicado
+            return nodo; //significa que dato ya existe en el arbol
         }
+
         return balancear(nodo);
     }
 
@@ -86,18 +95,11 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
             }
             actual = (cmp < 0) ? actual.izquierdo : actual.derecho;
         }
+
         return null;
     }
 
-    @Override
-    public boolean contiene(T dato) {
-        return buscar(dato) != null;
-    }
-
-    // ---------------- Eliminación ----------------
-    /**
-     * @return true si se eliminó, false si no existía.
-     */
+    // Eliminar, true si fue exitoso, false si no existe, es recursivo
     @Override
     public boolean eliminar(T dato) {
         if (dato == null) {
@@ -136,6 +138,7 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
         return balancear(nodo);
     }
 
+    //Metodos auxiliares para eliminación de nodos
     private NodoAVL<T> minimo(NodoAVL<T> nodo) {
         while (nodo.izquierdo != null) {
             nodo = nodo.izquierdo;
@@ -151,10 +154,7 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
         return balancear(nodo);
     }
 
-    // ---------------- Recorridos ----------------
-    /**
-     * Recorrido Inorden: visita los elementos en orden ascendente.
-     */
+    //Recorrido inorden
     @Override
     public void recorridoInorden(Consumer<T> accion) {
         inorden(raiz, accion);
@@ -169,6 +169,7 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
         inorden(nodo.derecho, accion);
     }
 
+    //Recorrido preorden
     @Override
     public void recorridoPreorden(Consumer<T> accion) {
         preorden(raiz, accion);
@@ -183,7 +184,7 @@ public class ArbolAVL<T extends Comparable<T>> implements ArbolBusquedaTAD<T> {
         preorden(nodo.derecho, accion);
     }
 
-    // ---------------- Balanceo AVL ----------------
+    //Balancear arbol
     private int altura(NodoAVL<T> nodo) {
         return (nodo == null) ? 0 : nodo.altura;
     }

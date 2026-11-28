@@ -12,14 +12,6 @@ import modelo.Prioridad;
 import modelo.Ticket;
 import java.util.function.Consumer;
 
-/**
- * Lógica central de la Mesa de Ayuda de Repsol.
- *
- * El servicio depende de los TADs (interfaces), no de las implementaciones: -
- * ArbolBusquedaTAD<Ticket> (ArbolAVL) : índice de tickets por ID. -
- * ArbolBusquedaTAD<Agente> (ArbolAVL) : índice de agentes por ID. -
- * ColaPrioridadTAD<Ticket> (ColaPrioridad): despacho de tickets por urgencia.
- */
 public class MesaAyudaService {
 
     private final ArbolBusquedaTAD<Ticket> indiceTickets = new ArbolAVL<>();
@@ -27,15 +19,10 @@ public class MesaAyudaService {
     private final ColaPrioridadTAD<Ticket> colaEspera = new ColaPrioridad<>(
             (a, b) -> Integer.compare(a.getPrioridad().getNivel(), b.getPrioridad().getNivel()));
 
-    private int siguienteIdTicket = 1001;
+    private int siguienteIdTicket = 1;
     private int siguienteIdAgente = 1;
 
-    // =====================================================================
-    //  AGENTES
-    // =====================================================================
-    /**
-     * O(log n)
-     */
+    //Metodos del agente
     public Agente registrarAgente(String nombre, Categoria especialidad) {
         validarTexto(nombre, "El nombre del agente");
         if (especialidad == null) {
@@ -46,26 +33,18 @@ public class MesaAyudaService {
         return agente;
     }
 
-    /**
-     * @return el agente o null si no existe. O(log n)
-     */
     public Agente buscarAgente(int id) {
         return indiceAgentes.buscar(new Agente(id));
     }
 
-    // =====================================================================
-    //  TICKETS: CRUD
-    // =====================================================================
-    /**
-     * O(n) por la inserción ordenada en la cola; O(log n) en el AVL.
-     */
+    //Metodos de los tickets
     public Ticket crearTicket(String titulo, String descripcion, String solicitante,
             Categoria categoria, Prioridad prioridad) {
-        validarTexto(titulo, "El título");
-        validarTexto(descripcion, "La descripción");
+        validarTexto(titulo, "El titulo");
+        validarTexto(descripcion, "La descripcion");
         validarTexto(solicitante, "El solicitante");
         if (categoria == null || prioridad == null) {
-            throw new MesaAyudaException("La categoría y la prioridad son obligatorias.");
+            throw new MesaAyudaException("La categoria y la prioridad son obligatorias.");
         }
         Ticket ticket = new Ticket(siguienteIdTicket++, titulo.trim(), descripcion.trim(),
                 solicitante.trim(), categoria, prioridad);
@@ -74,17 +53,10 @@ public class MesaAyudaService {
         return ticket;
     }
 
-    /**
-     * @return el ticket o null si no existe. O(log n)
-     */
     public Ticket buscarTicket(int id) {
         return indiceTickets.buscar(new Ticket(id));
     }
 
-    /**
-     * Eliminación definitiva. O(n) en el peor caso (sacar el ticket de la
-     * cola).
-     */
     public Ticket eliminarTicket(int id) {
         Ticket ticket = exigirTicket(id);
         indiceTickets.eliminar(ticket);
@@ -97,14 +69,6 @@ public class MesaAyudaService {
         return ticket;
     }
 
-    // =====================================================================
-    //  TICKETS: FLUJO DE ATENCIÓN
-    // =====================================================================
-    /**
-     * Despacha el ticket más urgente de la cola y lo asigna al agente más
-     * adecuado (misma especialidad y menor carga). O(a) por la selección del
-     * agente (recorrido Inorden); extraer de la cola es O(1).
-     */
     public Ticket atenderSiguiente() {
         if (colaEspera.estaVacia()) {
             throw new MesaAyudaException("No hay tickets en espera.");
@@ -120,9 +84,6 @@ public class MesaAyudaService {
         return ticket;
     }
 
-    /**
-     * Reasigna un ticket EN_ATENCION a otro agente. O(log n)
-     */
     public void reasignarAgente(int idTicket, int idAgente) {
         Ticket ticket = exigirTicket(idTicket);
         if (ticket.getEstado() != Estado.EN_ATENCION) {
@@ -141,9 +102,6 @@ public class MesaAyudaService {
         ticket.setAgenteAsignado(nuevo);
     }
 
-    /**
-     * O(log n)
-     */
     public void cambiarEstado(int id, Estado nuevo) {
         Ticket ticket = exigirTicket(id);
         Estado anterior = ticket.getEstado();
@@ -155,9 +113,6 @@ public class MesaAyudaService {
         ticket.setEstado(nuevo);
     }
 
-    /**
-     * O(n) si el ticket está en la cola (se reubica según su nueva urgencia).
-     */
     public void cambiarPrioridad(int id, Prioridad nueva) {
         Ticket ticket = exigirTicket(id);
         if (nueva == null) {
@@ -171,7 +126,7 @@ public class MesaAyudaService {
         }
         boolean enCola = ticket.getEstado() == Estado.ABIERTO;
         if (enCola) {
-            colaEspera.eliminar(ticket);   // se retira ANTES de cambiar su prioridad
+            colaEspera.eliminar(ticket);
         }
         ticket.setPrioridad(nueva);
         if (enCola) {
@@ -179,19 +134,12 @@ public class MesaAyudaService {
         }
     }
 
-    // =====================================================================
-    //  CONSULTAS Y RECORRIDOS
-    // =====================================================================
-    /**
-     * Listado ordenado por ID (recorrido Inorden del AVL). O(n)
-     */
+    //Listar tickets por ID 
     public void recorrerTickets(Consumer<Ticket> accion) {
         indiceTickets.recorridoInorden(accion);
     }
 
-    /**
-     * Listado filtrado por estado, ordenado por ID. O(n)
-     */
+    //Listar tickets por estado
     public void recorrerTicketsPorEstado(Estado estado, Consumer<Ticket> accion) {
         indiceTickets.recorridoInorden(t -> {
             if (t.getEstado() == estado) {
@@ -200,48 +148,24 @@ public class MesaAyudaService {
         });
     }
 
-    /**
-     * Tickets en espera, del más urgente al menos urgente. O(n)
-     */
+    //Listar por urgencia
     public void recorrerCola(Consumer<Ticket> accion) {
         colaEspera.recorrer(accion);
     }
 
+    //Listar agentes
     public void recorrerAgentes(Consumer<Agente> accion) {
         indiceAgentes.recorridoInorden(accion);
     }
 
-    /**
-     * Conteo de tickets por estado; el índice es Estado.ordinal(). O(n)
-     */
+    //Contar tickets por estado
     public int[] contarPorEstado() {
         int[] conteo = new int[Estado.values().length];
         indiceTickets.recorridoInorden(t -> conteo[t.getEstado().ordinal()]++);
         return conteo;
     }
 
-    public int getCantidadTickets() {
-        return indiceTickets.getTamanio();
-    }
-
-    public int getCantidadAgentes() {
-        return indiceAgentes.getTamanio();
-    }
-
-    public int getTicketsEnEspera() {
-        return colaEspera.getTamanio();
-    }
-
-    /**
-     * Altura actual del AVL de tickets (útil para mostrar el balanceo).
-     */
-    public int getAlturaIndice() {
-        return indiceTickets.altura();
-    }
-
-    // =====================================================================
-    //  MÉTODOS PRIVADOS DE APOYO
-    // =====================================================================
+    //Metodos auxiliares
     private Ticket exigirTicket(int id) {
         Ticket ticket = buscarTicket(id);
         if (ticket == null) {
@@ -252,7 +176,7 @@ public class MesaAyudaService {
 
     private void validarTexto(String texto, String campo) {
         if (texto == null || texto.trim().isEmpty()) {
-            throw new MesaAyudaException(campo + " no puede estar vacío.");
+            throw new MesaAyudaException(campo + " no puede estar vacio.");
         }
     }
 
@@ -267,9 +191,6 @@ public class MesaAyudaService {
         }
     }
 
-    /**
-     * Prefiere agente de la misma especialidad; desempata por menor carga.
-     */
     private Agente seleccionarAgente(Categoria categoria) {
         Agente[] mejor = new Agente[1];
         boolean[] mejorEsEspecialista = new boolean[1];
@@ -286,5 +207,22 @@ public class MesaAyudaService {
             }
         });
         return mejor[0];
+    }
+
+    //Getters
+    public int getCantidadTickets() {
+        return indiceTickets.getTamanio();
+    }
+
+    public int getCantidadAgentes() {
+        return indiceAgentes.getTamanio();
+    }
+
+    public int getTicketsEnEspera() {
+        return colaEspera.getTamanio();
+    }
+
+    public int getAlturaIndice() {
+        return indiceTickets.altura();
     }
 }
